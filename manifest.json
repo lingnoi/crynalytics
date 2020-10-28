@@ -1,6 +1,6 @@
 {
-    "name": "ctip ext",
-    "description": "c tip",
+    "name": "sentiment5",
+    "description": "A 5 minutes Sentiment indicator",
     "version": "0.0.1",
     "manifest_version": 2,
     "content_scripts": [

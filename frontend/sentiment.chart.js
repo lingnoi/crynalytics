@@ -1,6 +1,6 @@
 const title = 'Sentiment5'
 
-var ctx = document.getElementById('myChart');
+var ctx = document.getElementById('sentimentChart');
 var data = {
     labels: ['TOP_LONG', 'GLOBAL_LONG', 'TAKER_LONG', 'TOP_SHORT', 'GLOBAL_SHORT', 'TAKER_SHORT'],
     datasets: [{
@@ -20,7 +20,7 @@ var options = {
     responsive: true,
     title: {
         display: true,
-        text: 'Sentiment5'
+        text: title
     }
 }
 
@@ -65,9 +65,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResp) => {
         myRadarChart.data.datasets[0].data[TAKER_LONG] = (buyVol / totalVol).toFixed(2)
         myRadarChart.data.datasets[0].data[TAKER_SHORT] = (sellVol / totalVol).toFixed(2)
     }
-    else {
-        console.error('unknown message')
-    }
+
     myRadarChart.update()
 })
 

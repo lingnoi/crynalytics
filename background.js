@@ -5,24 +5,27 @@ chrome.tabs.onActivated.addListener(tab => {
     })
 })
 
-const symbol = 'neousdt'
 const timeframe = '5m'
 let lastTopTimestamp = 0
 let lastTopPosTimestamp = 0
 let lastGlobalTimestamp = 0
 let lastTakerTimestamp = 0
 let lastPriceTime = 0
+let currentInterval = null
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResp) => {
     if (message.msgType === 'NEED_DATA') {
-        sendData(true)
+        const symbol = message.payload
+        sendData(symbol, true)
+        if(currentInterval) {
+            clearInterval(currentInterval)
+        }
+        currentInterval = setInterval(sendData, 1000, symbol, false)
     }
 })
 
-const myInterval = setInterval(sendData, 1000, false)
-
-function sendData(forced = false) {
+function sendData(symbol, forced = false) {
     fetch(`https://fapi.binance.com/fapi/v1/trades?symbol=${symbol}&limit=1`)
         .then(response => response.json())
         .then(result => {
@@ -30,6 +33,7 @@ function sendData(forced = false) {
                 console.log(`send price: `, result)
                 chrome.runtime.sendMessage(null, {
                     msgType: 'PRICE', payload: {
+                        symbol: symbol,
                         data: result[0]
                     }
                 });
@@ -43,6 +47,7 @@ function sendData(forced = false) {
                 console.log(`send top: `, result)
                 chrome.runtime.sendMessage(null, {
                     msgType: 'TOP', payload: {
+                        symbol: symbol,
                         data: result[0]
                     }
                 });
@@ -56,6 +61,7 @@ function sendData(forced = false) {
                 console.log(`send top pos: `, result)
                 chrome.runtime.sendMessage(null, {
                     msgType: 'TOP_POS', payload: {
+                        symbol: symbol,
                         data: result[0]
                     }
                 });
@@ -69,6 +75,7 @@ function sendData(forced = false) {
                 console.log(`send global: `, result)
                 chrome.runtime.sendMessage(null, {
                     msgType: 'GLOBAL', payload: {
+                        symbol: symbol,
                         data: result[0]
                     }
                 });
@@ -82,6 +89,7 @@ function sendData(forced = false) {
                 console.log(`send taker: `, result)
                 chrome.runtime.sendMessage(null, {
                     msgType: 'TAKER', payload: {
+                        symbol: symbol,
                         data: result[0]
                     }
                 });

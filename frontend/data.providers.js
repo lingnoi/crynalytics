@@ -10,6 +10,7 @@ async function fetchExchangeInfoFromBinance() {
     sentimentMessageHandler({ msgType: 'EXCHANGEINFO_UPDATED' })
 }
 
+
 (() => {
     fetchExchangeInfoFromBinance()
 })()

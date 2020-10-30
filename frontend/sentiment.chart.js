@@ -70,6 +70,8 @@ function loadOrRestoreSentiment() {
                 sendNeedDataMsg(getCurrentAsset())
             }
         }
+
+        sendNeedPriceDataMsg(getCurrentAsset())
     })
 }
 

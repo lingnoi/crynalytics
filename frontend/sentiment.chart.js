@@ -1,4 +1,6 @@
 const title = 'Sentiment5'
+gOnChangingAsset = false
+gTradingviewChart = {}
 
 document.getElementById("selAsset").addEventListener("change", onSelectedAsset);
 
@@ -82,19 +84,49 @@ function getCurrentAsset() {
 
 function setCurrentAsset(symbol) {
     let selAsset = document.getElementById("selAsset")
-    selAsset.value = symbol
+    var opts = selAsset.options;
+    for (var opt, j = 0; opt = opts[j]; j++) {
+        if (opt.value == symbol) {
+            selAsset.selectedIndex = j
+            break;
+        }
+    }
+    buildTradingViewChart(symbol)
 }
 
 function onSelectedAsset() {
+    gOnChangingAsset = true
     const asset = getCurrentAsset()
     console.log(`selected ${asset}`)
     sendNeedSentimentDataMsg(asset)
-    sendNeedPriceDataMsg(asset)
+    buildTradingViewChart(asset)
+}
+
+function buildTradingViewChart(symbol) {
+    gTradingviewChart = new TradingView.widget(
+        {
+            // "autosize": true,
+            "width": 780,
+            "symbol": "BINANCE:" + symbol,
+            "interval": "15",
+            "timezone": "Etc/UTC",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "studies": [
+                "RSI@tv-basicstudies"
+            ],
+            "container_id": "tradingviewChart"
+        })
 }
 
 function sentimentMessageHandler(message, _sender, _sendResp) {
-    let tobeUpdated = false
-    console.log(`received message`, message)
+    let toBeUpdated = false
+    // console.log(`received message`, message)
     if (message.msgType === 'EXCHANGEINFO_UPDATED') {
         buildAssetDropDownList(gExchangeInfo.symbols)
         loadOrRestoreSentiment()
@@ -110,7 +142,7 @@ function sentimentMessageHandler(message, _sender, _sendResp) {
             data.datasets[1].data[TOP_SHORT] = myRadarChart.data.datasets[1].data[TOP_SHORT]
             data.datasets[0].data[TOP_LONG] = myRadarChart.data.datasets[0].data[TOP_LONG]
             data.datasets[0].data[TOP_SHORT] = myRadarChart.data.datasets[0].data[TOP_SHORT]
-            tobeUpdated = true
+            toBeUpdated = true
         } else {
             console.warn(`update failed: ${getCurrentAsset()}!=${message.payload.symbol}`)
         }
@@ -129,7 +161,7 @@ function sentimentMessageHandler(message, _sender, _sendResp) {
             data.datasets[1].data[GLOBAL_SHORT] = myRadarChart.data.datasets[1].data[GLOBAL_SHORT]
             data.datasets[0].data[GLOBAL_LONG] = myRadarChart.data.datasets[0].data[GLOBAL_LONG]
             data.datasets[0].data[GLOBAL_SHORT] = myRadarChart.data.datasets[0].data[GLOBAL_SHORT]
-            tobeUpdated = true
+            toBeUpdated = true
         } else {
             console.warn(`update failed: ${getCurrentAsset()}!=${message.payload.symbol}`)
         }
@@ -148,13 +180,13 @@ function sentimentMessageHandler(message, _sender, _sendResp) {
             data.datasets[1].data[TAKER_SHORT] = myRadarChart.data.datasets[1].data[TAKER_SHORT]
             data.datasets[0].data[TAKER_LONG] = myRadarChart.data.datasets[0].data[TAKER_LONG]
             data.datasets[0].data[TAKER_SHORT] = myRadarChart.data.datasets[0].data[TAKER_SHORT]
-            tobeUpdated = true
+            toBeUpdated = true
         } else {
             console.warn(`update failed: ${getCurrentAsset()}!=${message.payload.symbol}`)
         }
     }
 
-    if (tobeUpdated === true) {
+    if (toBeUpdated === true) {
         myRadarChart.update()
         chrome.storage.local.set({
             'sentiment': {

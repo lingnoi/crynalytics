@@ -1,10 +1,8 @@
 let priceData = {}
-let currentDataAsset = getCurrentAsset()
+// let currentDataAsset = getCurrentAsset()
 
 let myPriceChart = new Chart(document.getElementById('priceChart'), {
     type: 'line',
-    label: getCurrentAsset(),
-    spanGaps: false,
     data: {
         datasets: [{
             backgroundColor: Color('#4dc9f6').alpha(0).rgbString(),
@@ -14,6 +12,9 @@ let myPriceChart = new Chart(document.getElementById('priceChart'), {
         }]
     },
     options: {
+        legend: {
+            display: false
+        },
         scales: {
             xAxes: [{
                 type: 'time',
@@ -33,27 +34,41 @@ function sendNeedPriceDataMsg(symbol) {
 }
 
 function priceMessageHandler(message, _sender, _sendResp) {
-    if (message.msgType === 'PRICE') {
+    if (gOnChangingAsset) {
+        console.log(`changing asset -> skip message`)
+        const currentAsset = getCurrentAsset()
+        if (!(currentAsset in priceData)) {
+            priceData[currentAsset] = { data: [] }
+        }
+        myPriceChart.data.datasets[0].data = []
+        myPriceChart.data.datasets[0].data = [...priceData[currentAsset].data]
+        myPriceChart.update()
+        gOnChangingAsset = false
+        sendNeedPriceDataMsg(currentAsset)
+    }
+    else if (message.msgType === 'PRICE') {
         console.log(`${message.msgType}`, message.payload)
         const currentAsset = getCurrentAsset()
         if (!(currentAsset in priceData)) {
             priceData[currentAsset] = { data: [] }
         }
 
-        if (currentDataAsset !== currentAsset) {
-            currentDataAsset = currentAsset
-            myPriceChart.data.datasets[0].data = []
-            myPriceChart.data.datasets[0].data = [...priceData[currentAsset].data]
-        }
+        // if (currentDataAsset !== currentAsset) {
+        //     currentDataAsset = currentAsset
+        //     myPriceChart.data.datasets[0].data = []
+        //     myPriceChart.data.datasets[0].data = [...priceData[currentAsset].data]
+        // }
 
-        let d = new Date()
-        d.setTime(message.payload.data.time)
-        const newPrice = parseFloat(message.payload.data.price)
-        const newDataPoint = { x: message.payload.data.time, y: newPrice }
-        priceData[currentAsset].data.push(newDataPoint)
-        myPriceChart.data.datasets[0].data.push(newDataPoint)
-        console.log(`price data: `, myPriceChart.data.datasets[0].data.length)
-        myPriceChart.update()
+        if (message.payload.symbol === currentAsset) {
+            let d = new Date()
+            d.setTime(message.payload.data.time)
+            const newPrice = parseFloat(message.payload.data.price)
+            const newDataPoint = { x: message.payload.data.time, y: newPrice }
+            priceData[currentAsset].data.push(newDataPoint)
+            myPriceChart.data.datasets[0].data.push(newDataPoint)
+            console.log(`price data: `, myPriceChart.data.datasets[0].data.length)
+            myPriceChart.update()
+        }
     }
 }
 

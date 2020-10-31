@@ -12,13 +12,14 @@ html, body {
 .main {
     display: grid;
     grid-template-columns: 1fr;
-    padding: 10px;
+    padding: 1px;
 }
 
 .contentContainer {
     display: grid;
     grid-template-columns: 10fr 2fr;
     justify-content: center;
+    padding: 0px 20px 0px 20px;
 }
 
 .interactionBar {
@@ -26,4 +27,9 @@ html, body {
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-end;
+}
+
+.tradingview-widget-container {
+    margin-top: 1em;
+    width: 780px;
 }

@@ -49,15 +49,15 @@ function buildAssetDropDownList(symbols) {
     })
 }
 
-function sendNeedDataMsg(symbol) {
-    chrome.runtime.sendMessage(null, { msgType: 'NEED_DATA', payload: symbol });
+function sendNeedSentimentDataMsg(symbol) {
+    chrome.runtime.sendMessage(null, { msgType: 'NEED_SENTIMENT_DATA', payload: symbol });
 }
 
 function loadOrRestoreSentiment() {
     chrome.storage.local.get(['sentiment'], (result) => {
         console.log(`read from local storage: `, result.sentiment)
         if (!result.sentiment || !result.sentiment.asset || !result.sentiment.data) {
-            sendNeedDataMsg(getCurrentAsset())
+            sendNeedSentimentDataMsg(getCurrentAsset())
         } else {
             setCurrentAsset(result.sentiment.asset)
             myRadarChart.data.datasets[0].data = [...result.sentiment.data.datasets[0].data]
@@ -67,7 +67,7 @@ function loadOrRestoreSentiment() {
             const tenMinInMs = 10 * 60 * 1000
             if ((Date.now() - result.sentiment.date) >= tenMinInMs) {
                 console.log(`Sentiment too old, request for newer ones ...`)
-                sendNeedDataMsg(getCurrentAsset())
+                sendNeedSentimentDataMsg(getCurrentAsset())
             }
         }
 
@@ -88,7 +88,8 @@ function setCurrentAsset(symbol) {
 function onSelectedAsset() {
     const asset = getCurrentAsset()
     console.log(`selected ${asset}`)
-    sendNeedDataMsg(asset)
+    sendNeedSentimentDataMsg(asset)
+    sendNeedPriceDataMsg(asset)
 }
 
 function sentimentMessageHandler(message, _sender, _sendResp) {

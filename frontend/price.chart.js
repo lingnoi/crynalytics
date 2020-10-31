@@ -4,6 +4,7 @@ let currentDataAsset = getCurrentAsset()
 let myPriceChart = new Chart(document.getElementById('priceChart'), {
     type: 'line',
     label: getCurrentAsset(),
+    spanGaps: false,
     data: {
         datasets: [{
             backgroundColor: Color('#4dc9f6').alpha(0).rgbString(),
@@ -14,62 +15,12 @@ let myPriceChart = new Chart(document.getElementById('priceChart'), {
     },
     options: {
         scales: {
-            x: {
-                type: 'timeseries',
-                offset: true,
-                ticks: {
-                    major: {
-                        enabled: true,
-                    },
-                    font: function (context) {
-                        return context.tick && context.tick.major ? { style: 'bold' } : undefined;
-                    },
-                    source: 'data',
-                    autoSkip: true,
-                    autoSkipPadding: 75,
-                    maxRotation: 0,
-                    sampleSize: 100
-                },
-                // Custom logic that chooses major ticks by first timestamp in time period
-                // E.g. if March 1 & 2 are missing from dataset because they're weekends, we pick March 3 to be beginning of month
-                afterBuildTicks: function (scale) {
-                    const majorUnit = scale._majorUnit;
-                    const ticks = scale.ticks;
-                    const firstTick = ticks[0];
-
-                    let val = luxon.DateTime.fromMillis(ticks[0].value);
-                    if ((majorUnit === 'minute' && val.second === 0)
-                        || (majorUnit === 'hour' && val.minute === 0)
-                        || (majorUnit === 'day' && val.hour === 9)
-                        || (majorUnit === 'month' && val.day <= 3 && val.weekday === 1)
-                        || (majorUnit === 'year' && val.month === 1)) {
-                        firstTick.major = true;
-                    } else {
-                        firstTick.major = false;
-                    }
-                    let lastMajor = val.get(majorUnit);
-
-                    for (let i = 1; i < ticks.length; i++) {
-                        const tick = ticks[i];
-                        val = luxon.DateTime.fromMillis(tick.value);
-                        const currMajor = val.get(majorUnit);
-                        tick.major = currMajor !== lastMajor;
-                        lastMajor = currMajor;
-                    }
-                    scale.ticks = ticks;
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'minute'
                 }
-            },
-            y: {
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'value'
-                }
-            }
-        },
-        title: {
-            display: false,
-            text: getCurrentAsset()
+            }]
         }
     }
 })

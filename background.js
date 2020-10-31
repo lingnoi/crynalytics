@@ -16,7 +16,7 @@ let currentPriceInterval = null
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResp) => {
-    if (message.msgType === 'NEED_DATA') {
+    if (message.msgType === 'NEED_SENTIMENT_DATA') {
         const symbol = message.payload
         sendData(symbol, true)
         if (currentSentimentInterval) {

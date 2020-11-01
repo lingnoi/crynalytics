@@ -3,6 +3,9 @@ gOnChangingAsset = false
 gTradingviewChart = {}
 
 document.getElementById("selAsset").addEventListener("change", onSelectedAsset);
+document.getElementById("selAsset").addEventListener("click", onClickSelectedAsset);
+document.getElementById("selAsset").addEventListener("focusout", onFocusOutSelectedAsset);
+document.getElementById("chartToggler").addEventListener("change", onToggleChart);
 
 var ctx = document.getElementById('sentimentChart');
 var data = {
@@ -42,12 +45,19 @@ var myRadarChart = new Chart(ctx, {
 })
 
 function buildAssetDropDownList(symbols) {
-    let selAsset = document.getElementById("selAsset")
+    // let selAsset = document.getElementById("selAsset")
+    // symbols.forEach(item => {
+    //     let option = document.createElement("OPTION");
+    //     option.innerHTML = item.symbol;
+    //     option.value = item.symbol;
+    //     selAsset.options.add(option);
+    // })
+    const assetList = document.getElementById('assetList')
     symbols.forEach(item => {
         let option = document.createElement("OPTION");
         option.innerHTML = item.symbol;
         option.value = item.symbol;
-        selAsset.options.add(option);
+        assetList.appendChild(option);
     })
 }
 
@@ -83,14 +93,16 @@ function getCurrentAsset() {
 }
 
 function setCurrentAsset(symbol) {
-    let selAsset = document.getElementById("selAsset")
-    var opts = selAsset.options;
-    for (var opt, j = 0; opt = opts[j]; j++) {
-        if (opt.value == symbol) {
-            selAsset.selectedIndex = j
-            break;
-        }
-    }
+    // let selAsset = document.getElementById("selAsset")
+    // var opts = selAsset.options;
+    // for (var opt, j = 0; opt = opts[j]; j++) {
+    //     if (opt.value == symbol) {
+    //         selAsset.selectedIndex = j
+    //         break;
+    //     }
+    // }
+    const selAsset = document.getElementById("selAsset")
+    selAsset.value = symbol
     buildTradingViewChart(symbol)
 }
 
@@ -102,11 +114,41 @@ function onSelectedAsset() {
     buildTradingViewChart(asset)
 }
 
+let tempCurrentAsset = ''
+function onClickSelectedAsset() {
+    const selAssetElem = document.getElementById('selAsset')
+    if (selAssetElem.value !== '') {
+        tempCurrentAsset = selAssetElem.value
+        selAssetElem.value = ''
+    }
+}
+
+function onFocusOutSelectedAsset() {
+    const selAssetElem = document.getElementById('selAsset')
+    console.log(`sel value: ${selAssetElem.value}`)
+    if (selAssetElem.value === '') {
+        selAssetElem.value = tempCurrentAsset
+    }
+}
+
+function onToggleChart() {
+    const toggler = document.getElementById('chartToggler')
+    const chart = document.getElementsByClassName('tradingview-widget-container')[0]
+    console.log(`toggler checkd=${toggler.checked}`)
+    if (toggler.checked) {
+        chart.style.display = 'block'
+    } else {
+        chart.style.display = 'none'
+        document.getElementsByTagName('html')[0].style.height = '238px'
+        document.getElementsByTagName('body')[0].style.height = '238px'
+    }
+}
+
 function buildTradingViewChart(symbol) {
     gTradingviewChart = new TradingView.widget(
         {
             // "autosize": true,
-            "width": 780,
+            "width": 770,
             "symbol": "BINANCE:" + symbol,
             "interval": "15",
             "timezone": "Etc/UTC",

@@ -7,6 +7,7 @@ html, body {
     min-width: 800px;
     width: 100%;
     height: 100%;
+    resize: both;
 }
 
 .main {
@@ -22,14 +23,95 @@ html, body {
     padding: 0px 20px 0px 20px;
 }
 
-.interactionBar {
+.secondBar {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-end;
 }
 
+.logoContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: end;
+    justify-items: center;
+    font-family: Neuton, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.copyrightContainer {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.interactionBar {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.interactionItems {
+    display: flex;
+}
+
+.optionItems {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
 .tradingview-widget-container {
-    margin-top: 1em;
+    margin: 4px;
     width: 780px;
+    padding: 0px 2px 0px 2px;
+    display: none;
+}
+
+#tradingviewChart {}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    bottom: -10;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "insert_chart_outlined";
+    height: 1em;
+    width: 1em;
+    left: 4px;
+    bottom: 4px;
+    background-color: transparent;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: transparent;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    color: #2196F3;
 }

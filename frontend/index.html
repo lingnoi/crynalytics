@@ -2,6 +2,8 @@
 
 <head>
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -11,15 +13,27 @@
             <div class="sentimentChart">
                 <canvas id="sentimentChart"></canvas>
             </div>
-            <div class="interactionBar">
+            <div class="secondBar">
+                <div class="logoContainer">
+                    <img src="images/lingnoi_profile.png" width="25%">
+                    <span>by lingnoi</span>
+                </div>
                 <div class="priceChart">
                     <canvas id="priceChart"></canvas>
                 </div>
-                <form>
-                    <select name="asset" id="selAsset">
-                        <!-- <option value="BNBUSDT">BNBUSDT</option> -->
-                    </select>
-                </form>
+                <div class="interactionBar">
+                    <div class="interactionItems">
+                        <label class="switch">
+                            <input type="checkbox" id="chartToggler">
+                            <span class="slider material-icons"></span>
+                        </label>
+                    </div>
+                    <form class="optionItems">
+                        <!-- <select name="asset" id="selAsset"> </select> -->
+                        <input list="assetList" id="selAsset" name="selAsset" autocomplete="off"/>
+                        <datalist id="assetList"></datalist>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="tradingview-widget-container">
